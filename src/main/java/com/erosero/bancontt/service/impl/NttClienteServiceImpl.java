@@ -4,11 +4,12 @@ import com.erosero.bancontt.dto.NttClienteDto;
 import com.erosero.bancontt.entity.NttCliente;
 import com.erosero.bancontt.repository.NttClienteRepository;
 import com.erosero.bancontt.service.NttClienteService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
+@Slf4j
 @Service
 public class NttClienteServiceImpl implements NttClienteService {
 
@@ -17,6 +18,7 @@ public class NttClienteServiceImpl implements NttClienteService {
 
 
     public NttCliente encontrarClientePorId(Integer clienteId) throws Exception {
+        log.info("Find customer by id");
         Optional<NttCliente> nttCliente = nttClienteRepository.findById(clienteId);
         if (!nttCliente.isPresent()) {
             throw new Exception("Ingrese un Cliente Válido");
@@ -25,6 +27,7 @@ public class NttClienteServiceImpl implements NttClienteService {
     }
 
     public NttCliente guardarCliente(NttClienteDto nttCliente) throws Exception {
+        log.info("Save customer");
         NttCliente nttClienteGuardado = new NttCliente();
 
         nttClienteGuardado.setCliEstado(true);
@@ -46,6 +49,7 @@ public class NttClienteServiceImpl implements NttClienteService {
     }
 
     public NttCliente actualizarCliente(Integer id, NttClienteDto nttClienteActualizar) throws Exception {
+        log.info("Update customer");
         Optional<NttCliente> cliente = nttClienteRepository.findById(id);
 
         if (!cliente.isPresent())
@@ -71,6 +75,7 @@ public class NttClienteServiceImpl implements NttClienteService {
     }
 
     public NttCliente eliminarCliente(Integer id) throws Exception {
+        log.info("Delete customer");
         Optional<NttCliente> nttCliente = nttClienteRepository.findById(id);
 
         if (!nttCliente.isPresent())

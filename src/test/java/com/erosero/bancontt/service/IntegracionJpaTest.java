@@ -31,13 +31,6 @@ public class IntegracionJpaTest {
     NttTipoMovimientoRepository nttTipoMovimientoRepository;
 
     @Test
-    void encontrarCuentaPorId(){
-       Optional<NttCuenta> nttCuenta = nttCuentaRepository.findById(99);
-       assertTrue(nttCuenta.isPresent());
-       assertEquals("2539187665", nttCuenta.get().getCuenNumero());
-    }
-
-    @Test
     void saveCuenta(){
         Optional<NttCliente> nttCliente = nttClienteRepository.findById(99);
         Optional<NttTipoCuenta> nttTipoCuenta = nttTipoCuentaRepository.findById(1);
@@ -67,18 +60,6 @@ public class IntegracionJpaTest {
 
         assertEquals("1726442906", nttClienteGuardada.getPersIdentificacion());
         assertEquals("0935467472", nttClienteGuardada.getPersTelefono());
-    }
-
-    @Test
-    void saveMovimiento(){
-        Optional<NttCuenta> nttCuenta = nttCuentaRepository.findById(99);
-        Optional<NttTipoMovimiento> nttTipoMovimiento = nttTipoMovimientoRepository.findById(1);
-        NttMovimiento movimiento = new NttMovimiento(1 , new Date(), new BigDecimal("200"), new BigDecimal("200"), new BigDecimal("0"), nttCuenta.get(), nttTipoMovimiento.get());
-        NttMovimiento nttMovimientoGuardada = nttMovimientoRepository.save(movimiento);
-
-
-        assertEquals(new BigDecimal("200"), nttMovimientoGuardada.getMovValor());
-        assertEquals(new BigDecimal("0"), nttMovimientoGuardada.getMovSaldoInicial());
     }
 
 

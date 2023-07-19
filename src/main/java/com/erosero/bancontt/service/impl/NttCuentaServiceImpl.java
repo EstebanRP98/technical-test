@@ -6,11 +6,12 @@ import com.erosero.bancontt.entity.NttTipoCuenta;
 import com.erosero.bancontt.repository.NttCuentaRepository;
 import com.erosero.bancontt.repository.NttTipoCuentaRepository;
 import com.erosero.bancontt.service.NttCuentaService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
+@Slf4j
 @Service
 public class NttCuentaServiceImpl implements NttCuentaService {
 
@@ -28,6 +29,7 @@ public class NttCuentaServiceImpl implements NttCuentaService {
     }
 
     public NttTipoCuenta encontrarTipoCuentaPorId(Integer tipoCuentaId) throws Exception {
+        log.info("Find account type");
         Optional<NttTipoCuenta> nttTipoCuenta = nttTipoCuentaRepository.findById(tipoCuentaId);
         if (!nttTipoCuenta.isPresent()) {
             throw new Exception("Ingrese un Tipo de Cuenta Válido");
@@ -36,6 +38,7 @@ public class NttCuentaServiceImpl implements NttCuentaService {
     }
 
     public NttCuenta encontrarCuentaPorId(Integer cuentaId) throws Exception {
+        log.info("Find account");
         Optional<NttCuenta> nttCuenta = nttCuentaRepository.findById(cuentaId);
         if (!nttCuenta.isPresent()) {
             throw new Exception("Ingrese una Cuenta Válida");
@@ -44,6 +47,7 @@ public class NttCuentaServiceImpl implements NttCuentaService {
     }
 
     public NttCuenta guardarCuenta(NttCuentaDto nttCuenta) throws Exception {
+        log.info("Save account");
         NttCuenta nttCuentaGuardada = new NttCuenta();
 
         nttCuentaGuardada.setCuenNumero(nttCuenta.getCuenNumero() != null ? nttCuenta.getCuenNumero() : null);
@@ -56,6 +60,7 @@ public class NttCuentaServiceImpl implements NttCuentaService {
     }
 
     public NttCuenta actualizarCuenta(Integer id, NttCuentaDto nttCuentaActualizar) throws Exception {
+        log.info("Update account");
         Optional<NttCuenta> cuenta = nttCuentaRepository.findById(id);
 
         if (!cuenta.isPresent())
@@ -71,6 +76,7 @@ public class NttCuentaServiceImpl implements NttCuentaService {
     }
 
     public NttCuenta eliminarCuenta(Integer id) throws Exception {
+        log.info("Delete account");
         Optional<NttCuenta> nttCuenta = nttCuentaRepository.findById(id);
 
         if (!nttCuenta.isPresent())

@@ -32,7 +32,7 @@ Para crear los contendedores se utilizo docker compose.
     
     **Pasos**
     1. Primero se procede a clonar el repositorio
-        https://github.com/EstebanRP98/prueba_ntt_backend.git
+        https://github.com/EstebanRP98/technical-test.git
     2. Despues se procede a ingresar al proyecto y en la misma raiz del proyecto corremos el siguiente comando
         **docker-compose up -d** 
     3. Procedemos a Postman y corremos los servicios que necesitamos, importando las colecciones llamadas **"NttPrueba.postman_collection.json"** que estan en el proyecto.
