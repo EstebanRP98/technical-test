@@ -8,12 +8,12 @@ import com.erosero.bancontt.service.NttMovimientoService;
 import com.erosero.bancontt.util.GenericResponse;
 import com.erosero.bancontt.util.ParametersApp;
 import com.erosero.bancontt.util.UtilsApi;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
 
@@ -21,8 +21,11 @@ import java.util.List;
 @RequestMapping("/movimientos")
 public class NttMovimientoController {
 
-    @Autowired
-    NttMovimientoService nttMovimientoService;
+    private final NttMovimientoService nttMovimientoService;
+
+    public NttMovimientoController(NttMovimientoService nttMovimientoService) {
+        this.nttMovimientoService = nttMovimientoService;
+    }
 
     @GetMapping(value = "/encontrarMovimientoPorFecha")
     public ResponseEntity<GenericResponse> encontrarMovimientoPorFecha(@RequestParam("fechaInicial") @DateTimeFormat(pattern="dd-MM-yyyy") Date fechaInicial,

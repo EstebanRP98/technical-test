@@ -6,6 +6,7 @@ import com.erosero.bancontt.dto.ReporteMovimientoDto;
 import com.erosero.bancontt.entity.NttCuenta;
 import com.erosero.bancontt.entity.NttMovimiento;
 import com.erosero.bancontt.entity.NttTipoMovimiento;
+import com.erosero.bancontt.exception.*;
 import com.erosero.bancontt.repository.NttMovimientoRepository;
 import com.erosero.bancontt.repository.NttTipoMovimientoRepository;
 import com.erosero.bancontt.service.NttMovimientoService;
@@ -31,17 +32,17 @@ public class NttMovimientoServiceImpl implements NttMovimientoService {
     @Autowired
     NttTipoMovimientoRepository nttTipoMovimientoRepository;
 
-    public NttTipoMovimiento encontrarTipoMovimientoPorId(Integer tipoMovimientoId) throws Exception {
+    public NttTipoMovimiento encontrarTipoMovimientoPorId(Integer tipoMovimientoId) {
         log.info("Find type of movement");
         Optional<NttTipoMovimiento> nttTipoMovimiento = nttTipoMovimientoRepository.findById(tipoMovimientoId);
         if (!nttTipoMovimiento.isPresent()) {
-            log.error("Type of movement not found");
-            throw new Exception("Ingrese un Tipo de Movimiento Válido");
+            log.error("Type Movement not found");
+            throw new TypeMovementNotFoundException();
         }
         return nttTipoMovimiento.get();
     }
 
-    public List<ReporteMovimientoDto> encontrarMovimientoPorFechas(Date fechaInicial, Date fechaFinal, Integer clienteId) throws Exception {
+    public List<ReporteMovimientoDto> encontrarMovimientoPorFechas(Date fechaInicial, Date fechaFinal, Integer clienteId) {
         log.info("find transaction by date");
         List<NttMovimiento> movimientoList = nttMovimientoRepository.encontrarMovimientosPorFechas(fechaInicial, fechaFinal, clienteId);
         List<ReporteMovimientoDto> reporteMovimientoDtoList = new ArrayList<>();
@@ -70,24 +71,15 @@ public class NttMovimientoServiceImpl implements NttMovimientoService {
     }
 
     @Transactional
-    public NttMovimiento guardarMovimiento(NttMovimientoDto nttMovimiento) throws Exception {
+    public NttMovimiento guardarMovimiento(NttMovimientoDto nttMovimiento) {
         log.info("Save movement");
         NttMovimiento nttMovimientoGuardar = new NttMovimiento();
-        if (nttMovimiento.getMovCuenId() == null ) {
-            log.error("Enter a Valid Account");
-            throw new Exception("Ingrese una Cuenta Válida");
-        }
         NttCuenta nttCuenta = nttCuentaServiceImpl.encontrarCuentaPorId(nttMovimiento.getMovCuenId());
         if (!nttCuenta.isCuenEstado()) {
             log.error("Account is Deactivated");
-            throw new Exception("La Cuenta esta Desactivada");
+            throw new AccountDeactivatedException();
         }
-
-        if (nttMovimiento.getMovTipoMovimiento() == null || nttMovimiento.getMovTipoMovimiento() == null) {
-            log.error("Enter a valid Movement Type");
-            throw new Exception("Ingrese un Tipo de Movimiento válido");
-        }
-
+        validarMovimiento(nttMovimiento, nttCuenta);
         nttMovimientoGuardar.setMovCuenId(nttCuenta);
         nttMovimientoGuardar.setMovFecha(new Date());
         nttMovimientoGuardar.setMovSaldoInicial(nttCuenta.getCuenSaldoInicial());
@@ -98,7 +90,7 @@ public class NttMovimientoServiceImpl implements NttMovimientoService {
             case 1:
                 if (nttCuenta.getCuenSaldoInicial().doubleValue() < nttMovimiento.getMovValor().doubleValue()) {
                     log.error("Balance not available");
-                    throw new Exception("Saldo no Disponible");
+                    throw new BalanceNotAvailableException();
                 }
                 saldoFinal = nttCuenta.getCuenSaldoInicial().subtract(nttMovimiento.getMovValor());
                 nttMovimientoGuardar.setMovSaldo(saldoFinal);
@@ -112,7 +104,7 @@ public class NttMovimientoServiceImpl implements NttMovimientoService {
                 break;
             default:
                 log.error("Enter a Valid Movement Type");
-                throw new Exception("Ingrese un Tipo de Movimiento Válido");
+                throw new TypeMovementNotFoundException();
         }
 
         NttCuentaDto nttCuentaDto = new NttCuentaDto();
@@ -120,6 +112,23 @@ public class NttMovimientoServiceImpl implements NttMovimientoService {
         nttCuentaDto.setCuenEstado(true);
         nttCuentaServiceImpl.actualizarCuenta(nttCuenta.getCuenId(), nttCuentaDto);
         return nttMovimientoRepository.save(nttMovimientoGuardar);
+    }
+
+    public void validarMovimiento(NttMovimientoDto nttMovimiento, NttCuenta nttCuenta) {
+        if (nttMovimiento.getMovCuenId() == null ) {
+            log.error("Enter a Valid Account");
+            throw new AccountNotFoundException();
+        }
+
+        if(nttMovimiento.getMovValor().compareTo(new BigDecimal(5)) <= 0 ){
+            log.error("The transaction cannot be less than 5 dollars.");
+            throw new TransactionException();
+        }
+
+        if (nttMovimiento.getMovTipoMovimiento() == null || nttMovimiento.getMovTipoMovimiento() == null) {
+            log.error("Type Movement not found");
+            throw new TypeMovementNotFoundException();
+        }
     }
 
 

@@ -3,6 +3,8 @@ package com.erosero.bancontt.service.impl;
 import com.erosero.bancontt.dto.NttCuentaDto;
 import com.erosero.bancontt.entity.NttCuenta;
 import com.erosero.bancontt.entity.NttTipoCuenta;
+import com.erosero.bancontt.exception.AccountNotFoundException;
+import com.erosero.bancontt.exception.TypeMovementNotFoundException;
 import com.erosero.bancontt.repository.NttCuentaRepository;
 import com.erosero.bancontt.repository.NttTipoCuentaRepository;
 import com.erosero.bancontt.service.NttCuentaService;
@@ -28,25 +30,26 @@ public class NttCuentaServiceImpl implements NttCuentaService {
         this.nttCuentaRepository = nttCuentaRepository;
     }
 
-    public NttTipoCuenta encontrarTipoCuentaPorId(Integer tipoCuentaId) throws Exception {
-        log.info("Find account type");
+    public NttTipoCuenta encontrarTipoCuentaPorId(Integer tipoCuentaId) {
+        log.error("Find account type");
         Optional<NttTipoCuenta> nttTipoCuenta = nttTipoCuentaRepository.findById(tipoCuentaId);
         if (!nttTipoCuenta.isPresent()) {
-            throw new Exception("Ingrese un Tipo de Cuenta Válido");
+            log.error("Type Movement not found");
+            throw new TypeMovementNotFoundException();
         }
         return nttTipoCuenta.get();
     }
 
-    public NttCuenta encontrarCuentaPorId(Integer cuentaId) throws Exception {
+    public NttCuenta encontrarCuentaPorId(Integer cuentaId) {
         log.info("Find account");
         Optional<NttCuenta> nttCuenta = nttCuentaRepository.findById(cuentaId);
         if (!nttCuenta.isPresent()) {
-            throw new Exception("Ingrese una Cuenta Válida");
+            throw new AccountNotFoundException();
         }
         return nttCuenta.get();
     }
 
-    public NttCuenta guardarCuenta(NttCuentaDto nttCuenta) throws Exception {
+    public NttCuenta guardarCuenta(NttCuentaDto nttCuenta) {
         log.info("Save account");
         NttCuenta nttCuentaGuardada = new NttCuenta();
 
@@ -59,12 +62,12 @@ public class NttCuentaServiceImpl implements NttCuentaService {
         return nttCuentaRepository.save(nttCuentaGuardada);
     }
 
-    public NttCuenta actualizarCuenta(Integer id, NttCuentaDto nttCuentaActualizar) throws Exception {
+    public NttCuenta actualizarCuenta(Integer id, NttCuentaDto nttCuentaActualizar) {
         log.info("Update account");
         Optional<NttCuenta> cuenta = nttCuentaRepository.findById(id);
 
         if (!cuenta.isPresent())
-            throw new Exception("La Cuenta que intenta actualizar no existe");
+            throw new AccountNotFoundException();
 
         cuenta.get().setCuenNumero(nttCuentaActualizar.getCuenNumero() != null ? nttCuentaActualizar.getCuenNumero() : cuenta.get().getCuenNumero());
         cuenta.get().setCuenEstado(nttCuentaActualizar.isCuenEstado());
@@ -75,12 +78,12 @@ public class NttCuentaServiceImpl implements NttCuentaService {
         return nttCuentaRepository.save(cuenta.get());
     }
 
-    public NttCuenta eliminarCuenta(Integer id) throws Exception {
+    public NttCuenta eliminarCuenta(Integer id) {
         log.info("Delete account");
         Optional<NttCuenta> nttCuenta = nttCuentaRepository.findById(id);
 
         if (!nttCuenta.isPresent())
-            throw new Exception("La Cuenta que intenta eliminar no existe");
+            throw new AccountNotFoundException();
         nttCuenta.get().setCuenEstado(false);
         nttCuentaRepository.save(nttCuenta.get());
         return nttCuenta.get();

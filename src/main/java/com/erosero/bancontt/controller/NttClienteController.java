@@ -35,17 +35,11 @@ public class NttClienteController {
     }
 
     @PostMapping(value = "/crearCliente")
-    public ResponseEntity<GenericResponse> crearCliente(@RequestBody NttClienteDto nttCliente) {
+    public ResponseEntity<GenericResponse> crearCliente(@RequestBody NttClienteDto nttCliente) throws Exception {
         GenericResponse<NttCliente> nttClienteGR = new GenericResponse<>();
-        try {
-            NttCliente nttClienteGuardado = nttClienteService.guardarCliente(nttCliente);
-            nttClienteGR.setObject(nttClienteGuardado);
-            nttClienteGR.setStatus(ParametersApp.SUCCESSFUL.value());
-        } catch (Exception e) {
-            nttClienteGR.setObject(null);
-            nttClienteGR.setStatus(ParametersApp.PROCESS_NOT_COMPLETED.value());
-            nttClienteGR.saveMessage(UtilsApi.getProcessExceptionMessage(e, 500));
-        }
+        NttCliente nttClienteGuardado = nttClienteService.guardarCliente(nttCliente);
+        nttClienteGR.setObject(nttClienteGuardado);
+        nttClienteGR.setStatus(ParametersApp.SUCCESSFUL.value());
         return new ResponseEntity<>(nttClienteGR, HttpStatus.OK);
     }
 

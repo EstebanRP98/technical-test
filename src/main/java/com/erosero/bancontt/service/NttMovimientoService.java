@@ -14,6 +14,6 @@ public interface NttMovimientoService {
 
     List<ReporteMovimientoDto> encontrarMovimientoPorFechas(Date fechaInicial, Date fechaFinal, Integer clienteId) throws Exception;
 
-    NttMovimiento guardarMovimiento(NttMovimientoDto nttMovimiento) throws Exception;
+    NttMovimiento guardarMovimiento(NttMovimientoDto nttMovimiento);
 
 }

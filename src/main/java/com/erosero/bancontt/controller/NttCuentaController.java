@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/cuentas")
 public class NttCuentaController {
@@ -37,15 +39,11 @@ public class NttCuentaController {
     @PostMapping(value = "/crearCuenta")
     public ResponseEntity<GenericResponse> crearCuenta(@RequestBody NttCuentaDto nttCuentaDto) {
         GenericResponse<NttCuenta> nttCuentaGR = new GenericResponse<>();
-        try {
-            NttCuenta nttCuentaGuardado = nttCuentaService.guardarCuenta(nttCuentaDto);
-            nttCuentaGR.setObject(nttCuentaGuardado);
-            nttCuentaGR.setStatus(ParametersApp.SUCCESSFUL.value());
-        } catch (Exception e) {
-            nttCuentaGR.setObject(null);
-            nttCuentaGR.setStatus(ParametersApp.PROCESS_NOT_COMPLETED.value());
-            nttCuentaGR.saveMessage(UtilsApi.getProcessExceptionMessage(e, 500));
-        }
+
+        NttCuenta nttCuentaGuardado = nttCuentaService.guardarCuenta(nttCuentaDto);
+        nttCuentaGR.setObject(nttCuentaGuardado);
+        nttCuentaGR.setStatus(ParametersApp.SUCCESSFUL.value());
+
         return new ResponseEntity<>(nttCuentaGR, HttpStatus.OK);
     }
 

@@ -10,7 +10,7 @@ public interface NttCuentaService {
 
     NttCuenta encontrarCuentaPorId(Integer cuentaId) throws Exception;
 
-    NttCuenta guardarCuenta(NttCuentaDto nttCuenta) throws Exception;
+    NttCuenta guardarCuenta(NttCuentaDto nttCuenta);
 
     NttCuenta actualizarCuenta(Integer id, NttCuentaDto nttCuentaActualizar) throws Exception;
 

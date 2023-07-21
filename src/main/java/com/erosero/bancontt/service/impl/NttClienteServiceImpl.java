@@ -2,6 +2,7 @@ package com.erosero.bancontt.service.impl;
 
 import com.erosero.bancontt.dto.NttClienteDto;
 import com.erosero.bancontt.entity.NttCliente;
+import com.erosero.bancontt.exception.ClientNotFoundException;
 import com.erosero.bancontt.repository.NttClienteRepository;
 import com.erosero.bancontt.service.NttClienteService;
 import lombok.extern.slf4j.Slf4j;
@@ -17,16 +18,17 @@ public class NttClienteServiceImpl implements NttClienteService {
     NttClienteRepository nttClienteRepository;
 
 
-    public NttCliente encontrarClientePorId(Integer clienteId) throws Exception {
+    public NttCliente encontrarClientePorId(Integer clienteId){
         log.info("Find customer by id");
         Optional<NttCliente> nttCliente = nttClienteRepository.findById(clienteId);
         if (!nttCliente.isPresent()) {
-            throw new Exception("Ingrese un Cliente Válido");
+            log.error("Client not found");
+            throw new ClientNotFoundException(clienteId.longValue());
         }
         return nttCliente.get();
     }
 
-    public NttCliente guardarCliente(NttClienteDto nttCliente) throws Exception {
+    public NttCliente guardarCliente(NttClienteDto nttCliente) {
         log.info("Save customer");
         NttCliente nttClienteGuardado = new NttCliente();
 
@@ -48,12 +50,14 @@ public class NttClienteServiceImpl implements NttClienteService {
         return nttClienteRepository.save(nttClienteGuardado);
     }
 
-    public NttCliente actualizarCliente(Integer id, NttClienteDto nttClienteActualizar) throws Exception {
+    public NttCliente actualizarCliente(Integer id, NttClienteDto nttClienteActualizar){
         log.info("Update customer");
         Optional<NttCliente> cliente = nttClienteRepository.findById(id);
 
-        if (!cliente.isPresent())
-            throw new Exception("El Cliente que intenta actualizar no existe");
+        if (!cliente.isPresent()){
+            log.error("Client not found");
+            throw new ClientNotFoundException(id.longValue());
+        }
 
         cliente.get().setCliEstado(nttClienteActualizar.isCliEstado());
         cliente.get().setCliPassword(nttClienteActualizar.getCliPassword() != null ?
@@ -74,12 +78,14 @@ public class NttClienteServiceImpl implements NttClienteService {
         return nttClienteRepository.save(cliente.get());
     }
 
-    public NttCliente eliminarCliente(Integer id) throws Exception {
+    public NttCliente eliminarCliente(Integer id) {
         log.info("Delete customer");
         Optional<NttCliente> nttCliente = nttClienteRepository.findById(id);
 
-        if (!nttCliente.isPresent())
-            throw new Exception("La Cuenta que intenta eliminar no existe");
+        if (!nttCliente.isPresent()){
+            log.error("Client not found");
+            throw new ClientNotFoundException(id.longValue());
+        }
 
         nttClienteRepository.delete(nttCliente.get());
         return nttCliente.get();
